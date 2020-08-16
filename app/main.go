@@ -5,10 +5,24 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
+
+//RequestMock struct and functions
+type RequestMock struct {
+	Hash            [32]byte
+	URL             string        `json:"url"`
+	RequestBody     string        `json:"requestBody"`
+	RequestMethod   string        `json:"requestMethod"`
+	RequestHeaders  []interface{} `json:"requestHeaders"`
+	ResponseBody    string        `json:"responseBody"`
+	ResponseCode    int           `json:"responseCode"`
+	ResponseHeaders []interface{} `json:"responseHeaders"`
+	Override        bool          `json:"override"`
+}
 
 var router = mux.NewRouter()
 var mocks []RequestMock
@@ -30,8 +44,12 @@ func AddMockHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Hash: %x\n", newMock.hash())
 
 	if exists(newMock) {
-		http.Error(w, "Duplicated", http.StatusConflict)
-		return
+		if newMock.Override {
+			replaceMock(newMock)
+		} else {
+			http.Error(w, "Duplicated", http.StatusConflict)
+			return
+		}
 	}
 
 	mocks = append(mocks, newMock)
@@ -43,7 +61,6 @@ func AddMockHandler(w http.ResponseWriter, r *http.Request) {
 
 //Handler to dynamic handling new requests
 func DynamicMockHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	reqBody, err := decodeBody(w, r)
 	if err != nil {
@@ -63,22 +80,14 @@ func DynamicMockHandler(w http.ResponseWriter, r *http.Request) {
 
 	mock = getRequestMock(mock.Hash)
 	fmt.Printf("ResponseBody:%s\n", mock.ResponseBody)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(mock.ResponseCode)
 	w.Write([]byte(mock.ResponseBody))
+
 }
 
-//RequestMock struct and functions
-type RequestMock struct {
-	Hash            [32]byte
-	URL             string   `json:"url"`
-	RequestBody     string   `json:"requestBody"`
-	RequestMethod   string   `json:"requestMethod"`
-	RequestHeaders  []string `json:"requestHeaders"`
-	ResponseBody    string   `json:"responseBody"`
-	ResponseCode    string   `json:"responseCode"`
-	ResponseHeaders []string `json:"responseHeaders"`
-	Override        bool     `json:"override"`
-}
-
+//Validates if the provided mock exists on the mocks slice based on the hash
 func exists(mock RequestMock) bool {
 	for i := range mocks {
 		if mock.Hash == mocks[i].Hash {
@@ -88,6 +97,7 @@ func exists(mock RequestMock) bool {
 	return false
 }
 
+//Retrieves the request mock correspoding to the hash
 func getRequestMock(hash [32]byte) RequestMock {
 	var result RequestMock
 	for i := range mocks {
@@ -96,6 +106,17 @@ func getRequestMock(hash [32]byte) RequestMock {
 		}
 	}
 	return result
+}
+
+//Replaces mock based on hash
+func replaceMock(mock RequestMock) {
+	for i := range mocks {
+		if mock.Hash == mocks[i].Hash {
+			fmt.Printf("ReplacingMock:%+v\n", mock.Hash)
+			mocks[i] = mock
+			return
+		}
+	}
 }
 
 // Generates hash based on request URL, Method and Body
@@ -118,7 +139,11 @@ func decodeBody(w http.ResponseWriter, r *http.Request) (string, error) {
 	reqBody := map[string]interface{}{}
 	err := decoder.Decode(&reqBody)
 	if err != nil {
-		return "", err
+		if err == io.EOF {
+			fmt.Println("Empty body.")
+		} else {
+			return "", err
+		}
 	}
 
 	fmt.Printf("ReqBody:%+v\n", &reqBody)
