@@ -1,35 +1,30 @@
-FROM golang:alpine AS builder
+FROM golang as base
 
-# Set necessary environmet variables needed for our image
+WORKDIR /msgo
+
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=amd64
 
-# Move to working directory /build
-WORKDIR /build
+COPY app/go.mod .
+COPY app/go.sum .
 
-# Copy and download dependency using go mod
-COPY main/go.mod .
-COPY main/go.sum .
 RUN go mod download
 
-# Copy the code into the container
-COPY . .
+COPY app/. .
 
-# Build the application
-RUN go build -o main .
+# it will take the flags from the environment
+RUN go build
 
-# Move to /dist directory as the place for resulting binary folder
-WORKDIR /dist
+### Certs
+FROM alpine:latest as certs
+RUN apk --update add ca-certificates
 
-# Copy binary from build to main folder
-RUN cp /build/main .
+EXPOSE 3000
 
-# Build a small image
-FROM scratch
-
-COPY --from=builder /dist/main /
-
-# Command to run
-ENTRYPOINT ["/main"]
+### App
+FROM scratch as app
+COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=base msgo /
+ENTRYPOINT ["/msgo"]

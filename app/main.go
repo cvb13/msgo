@@ -10,8 +10,7 @@ import (
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/{name}", NameHandler)
-	fmt.Print("Listening on port 8000")
-	http.ListenAndServe(":8000", r)
+	http.ListenAndServe(":3000", r)
 }
 
 func NameHandler(w http.ResponseWriter, r *http.Request) {
