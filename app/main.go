@@ -14,14 +14,14 @@ import (
 //RequestMock struct and functions
 type RequestMock struct {
 	Hash            [32]byte
-	URL             string        `json:"url"`
-	RequestBody     string        `json:"requestBody"`
-	RequestMethod   string        `json:"requestMethod"`
-	RequestHeaders  []interface{} `json:"requestHeaders"`
-	ResponseBody    string        `json:"responseBody"`
-	ResponseCode    int           `json:"responseCode"`
-	ResponseHeaders []interface{} `json:"responseHeaders"`
-	Override        bool          `json:"override"`
+	URL             string            `json:"url"`
+	RequestBody     string            `json:"requestBody"`
+	RequestMethod   string            `json:"requestMethod"`
+	RequestHeaders  map[string]string `json:"requestHeaders"`
+	ResponseBody    string            `json:"responseBody"`
+	ResponseCode    int               `json:"responseCode"`
+	ResponseHeaders map[string]string `json:"responseHeaders"`
+	Override        bool              `json:"override"`
 }
 
 var router = mux.NewRouter()
@@ -81,10 +81,11 @@ func DynamicMockHandler(w http.ResponseWriter, r *http.Request) {
 	mock = getRequestMock(mock.Hash)
 	fmt.Printf("ResponseBody:%s\n", mock.ResponseBody)
 
-	w.Header().Set("Content-Type", "application/json")
+	for key, val := range mock.ResponseHeaders {
+		w.Header().Set(key, val)
+	}
 	w.WriteHeader(mock.ResponseCode)
 	w.Write([]byte(mock.ResponseBody))
-
 }
 
 //Validates if the provided mock exists on the mocks slice based on the hash
