@@ -29,6 +29,7 @@ var mocks []RequestMock
 
 func main() {
 	router.HandleFunc("/mocks/add", AddMockHandler).Methods("POST")
+	router.HandleFunc("/mocks/getAll", GetAllMockHandler).Methods("GET")
 	http.ListenAndServe(":3000", router)
 }
 
@@ -86,6 +87,16 @@ func DynamicMockHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(mock.ResponseCode)
 	w.Write([]byte(mock.ResponseBody))
+}
+
+//Handler to dynamic handling new requests
+func GetAllMockHandler(w http.ResponseWriter, r *http.Request) {
+	responseBody, err := json.Marshal(mocks)
+	if err != nil {
+		http.Error(w, "Error converting mocks to json",
+			http.StatusInternalServerError)
+	}
+	w.Write(responseBody)
 }
 
 //Validates if the provided mock exists on the mocks slice based on the hash
