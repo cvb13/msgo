@@ -33,12 +33,13 @@ func AddMockHandler(w http.ResponseWriter, r *http.Request) {
 	mocks = append(mocks, newMock)
 
 	//handle new path being added
-	router.HandleFunc(newMock.URL, PersistedMockHandler).Methods("GET")
+	router.HandleFunc(newMock.URL, DynamicMockHandler).Methods("GET")
 
 	fmt.Printf("%+v\n", &newMock)
 }
 
-func PersistedMockHandler(w http.ResponseWriter, r *http.Request) {
+//Handler to dynamic handling new requests
+func DynamicMockHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var mock RequestMock
 	mock.URL = r.URL.Path
@@ -53,6 +54,7 @@ func PersistedMockHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(mock.ResponseBody))
 }
 
+//RequestMock struct and functions
 type RequestMock struct {
 	URL          string `json:"url"`
 	Body         string `json:"body"`
