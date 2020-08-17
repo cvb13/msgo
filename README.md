@@ -10,3 +10,6 @@
 
 # Postman
 - Postman collection included at /postman folder for testing
+
+# Dependencies
+- This project uses https://github.com/gorilla/mux to build the handlers and routers for the mocked requests.
