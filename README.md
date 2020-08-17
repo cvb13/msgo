@@ -28,7 +28,7 @@
 }
 ```
 
-Succesful response: 200 OK
+Succesful response: 201 OK
 
 # Add multiple mock requests
 - Method: POST
@@ -63,7 +63,7 @@ Succesful response: 200 OK
 ]
 ```
 
-Succesful response: 200 OK
+Succesful response: 201 OK
 
 # Export in-memory mocks
 - Method: GET
@@ -98,7 +98,7 @@ Succesful response: 200 OK
 ]
 ```
 
-Succesfull response code: 200 OK
+Succesfull response code: 201 OK
 
 # Dependencies
 - This project uses https://github.com/gorilla/mux to build the handlers and routers for the mocked requests.
