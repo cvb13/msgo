@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -31,6 +32,7 @@ func main() {
 	router.HandleFunc("/mocks/add", AddMockHandler).Methods("POST")
 	router.HandleFunc("/mocks/addAll", AddAllMockHandler).Methods("POST")
 	router.HandleFunc("/mocks/getAll", GetAllMockHandler).Methods("GET")
+	router.HandleFunc("/mocks/export", ExportMockHandler).Queries("fileName", "{fileName}").Methods("GET")
 	http.ListenAndServe(":3000", router)
 }
 
@@ -95,12 +97,37 @@ func GetAllMockHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Error converting mocks to json",
 			http.StatusInternalServerError)
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(responseBody)
 }
 
+//Handler to export current mocks into json file
+func ExportMockHandler(w http.ResponseWriter, r *http.Request) {
+	fileName := r.FormValue("fileName")
+	err := saveMocksToFile(fileName)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Error saving file.",
+			http.StatusInternalServerError)
+		return
+	}
+	http.ServeFile(w, r, fileName)
+}
+
 /** Helper methods **/
+
+// Save mocks to file
+func saveMocksToFile(fileName string) error {
+	fmt.Printf("FileName: %s\n: ", fileName)
+	content, err := json.Marshal(mocks)
+	if err != nil {
+		fmt.Println("Error marshalling mocks")
+		return err
+	}
+	return ioutil.WriteFile(fileName, content, 0666)
+}
 
 //Adds a single request mock into the mocks array
 func addSingleMockRequest(newMock RequestMock, w http.ResponseWriter) {
