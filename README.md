@@ -9,12 +9,12 @@
 - docker run -p 3000:3000 msgo-docker
 
 # Postman
-- Postman collection included at /postman folder for testing
+- Postman collection included at ***/postman*** folder for testing
 
 # Add mock request
-Method: POST
-URL: http://{{host}}:3000/mocks/add
-Request Body:
+- Method: POST
+- URL: http://{{host}}:3000/mocks/add
+- Request Body:
 ```
 {
     "url" : "\/test", 
@@ -31,9 +31,9 @@ Request Body:
 Succesful response: 200 OK
 
 # Add multiple mock requests
-Method: POST
-URL: http://{{host}}:3000/mocks/addAll
-Request Body:
+- Method: POST
+- URL: http://{{host}}:3000/mocks/addAll
+- Request Body:
 ```
 [
     {
@@ -66,9 +66,9 @@ Request Body:
 Succesful response: 200 OK
 
 # Export in-memory mocks
-Method: GET
-URL: http://{{host}}:3000/mocks/export?fileName=fileName.json
-Response:
+- Method: GET
+- URL: http://{{host}}:3000/mocks/export?fileName=fileName.json
+- Response:
 ```
 [
     {
