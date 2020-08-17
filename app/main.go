@@ -46,6 +46,7 @@ func AddMockHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	addSingleMockRequest(newMock, w)
+	w.WriteHeader(201)
 }
 
 func AddAllMockHandler(w http.ResponseWriter, r *http.Request) {
@@ -60,6 +61,7 @@ func AddAllMockHandler(w http.ResponseWriter, r *http.Request) {
 	for i := range newMocks {
 		addSingleMockRequest(newMocks[i], w)
 	}
+	w.WriteHeader(201)
 }
 
 //Handler to dynamic handling new requests
@@ -114,6 +116,7 @@ func ExportMockHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.ServeFile(w, r, fileName)
+	w.WriteHeader(201)
 }
 
 /** Helper methods **/
