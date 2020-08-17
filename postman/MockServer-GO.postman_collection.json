@@ -1,0 +1,190 @@
+{
+	"info": {
+		"_postman_id": "2d2a1c0b-9d28-4b01-9c4a-a54e6673b6d0",
+		"name": "MockServer-GO",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/mocks/add",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"url\" : \"\\/test\", \n    \"requestBody\":null,\n    \"requestMethod\" : \"GET\",\n    \"requestHeaders\":{},\n    \"responseBody\":\"{\\\"result\\\":\\\"put-success\\\"}\",\n    \"responseCode\":200,\n    \"responseHeaders\":{\"Content-Type\":\"application/json\", \"Date\":\"Mon, 18 Jul 2016 16:06:00 GMT\", \"X-Backend-Server\":\"msgo.local.com\"},\n    \"override\":false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/mocks/add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"mocks",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/mocks/addAll",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"Hash\": [\n            46,\n            144,\n            92,\n            245,\n            112,\n            202,\n            199,\n            119,\n            83,\n            200,\n            155,\n            208,\n            2,\n            174,\n            175,\n            4,\n            185,\n            94,\n            149,\n            75,\n            190,\n            150,\n            153,\n            66,\n            18,\n            15,\n            6,\n            160,\n            104,\n            142,\n            97,\n            240\n        ],\n        \"url\": \"/get\",\n        \"requestBody\": \"\",\n        \"requestMethod\": \"GET\",\n        \"requestHeaders\": {},\n        \"responseBody\": \"{\\\"result\\\":\\\"get-success\\\"}\",\n        \"responseCode\": 200,\n        \"responseHeaders\": {\n            \"Content-Type\": \"application/json\",\n            \"Date\": \"Mon, 18 Jul 2016 16:06:00 GMT\",\n            \"X-Backend-Server\": \"msgo.local.com\"\n        },\n        \"override\": false\n    },\n    {\n        \"Hash\": [\n            48,\n            98,\n            51,\n            176,\n            64,\n            153,\n            2,\n            244,\n            158,\n            32,\n            70,\n            20,\n            235,\n            126,\n            79,\n            105,\n            92,\n            111,\n            22,\n            182,\n            206,\n            132,\n            114,\n            79,\n            177,\n            252,\n            188,\n            128,\n            165,\n            150,\n            88,\n            87\n        ],\n        \"url\": \"/put\",\n        \"requestBody\": \"{\\\"input\\\":1}\",\n        \"requestMethod\": \"PUT\",\n        \"requestHeaders\": {},\n        \"responseBody\": \"{\\\"result\\\":\\\"put-success\\\"}\",\n        \"responseCode\": 201,\n        \"responseHeaders\": {\n            \"Content-Type\": \"application/json\",\n            \"Date\": \"Mon, 18 Jul 2016 16:06:00 GMT\",\n            \"X-Backend-Server\": \"msgo.local.com\"\n        },\n        \"override\": false\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/mocks/addAll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"mocks",
+						"addAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/mocks/getAll",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/mocks/getAll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"mocks",
+						"getAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/export",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/mocks/export?fileName=exported_mocks_123.json",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"mocks",
+						"export"
+					],
+					"query": [
+						{
+							"key": "fileName",
+							"value": "exported_mocks_123.json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/test",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/get",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/foo",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"not-test\":\"not-test\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/fooas",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"fooas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/put/1",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/put/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"put",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
