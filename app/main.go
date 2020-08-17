@@ -13,7 +13,7 @@ import (
 
 //RequestMock struct and functions
 type RequestMock struct {
-	Hash            [32]byte
+	Hash            [32]byte          `json:"Hash"`
 	URL             string            `json:"url"`
 	RequestBody     string            `json:"requestBody"`
 	RequestMethod   string            `json:"requestMethod"`
@@ -29,6 +29,7 @@ var mocks []RequestMock
 
 func main() {
 	router.HandleFunc("/mocks/add", AddMockHandler).Methods("POST")
+	router.HandleFunc("/mocks/addAll", AddAllMockHandler).Methods("POST")
 	router.HandleFunc("/mocks/getAll", GetAllMockHandler).Methods("GET")
 	http.ListenAndServe(":3000", router)
 }
@@ -42,22 +43,21 @@ func AddMockHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("Hash: %x\n", newMock.hash())
+	addSingleMockRequest(newMock, w)
+}
 
-	if exists(newMock) {
-		if newMock.Override {
-			replaceMock(newMock)
-		} else {
-			http.Error(w, "Duplicated", http.StatusConflict)
-			return
-		}
+func AddAllMockHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var newMocks []RequestMock
+	err := json.NewDecoder(r.Body).Decode(&newMocks)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	mocks = append(mocks, newMock)
-
-	//handle new path being added
-	router.HandleFunc(newMock.URL, DynamicMockHandler).Methods(newMock.RequestMethod)
-	fmt.Printf("%+v\n", &newMock)
+	for i := range newMocks {
+		addSingleMockRequest(newMocks[i], w)
+	}
 }
 
 //Handler to dynamic handling new requests
@@ -98,6 +98,28 @@ func GetAllMockHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(responseBody)
+}
+
+/** Helper methods **/
+
+//Adds a single request mock into the mocks array
+func addSingleMockRequest(newMock RequestMock, w http.ResponseWriter) {
+	fmt.Printf("Hash: %x\n", newMock.hash())
+
+	if exists(newMock) {
+		if newMock.Override {
+			replaceMock(newMock)
+		} else {
+			http.Error(w, "Duplicated", http.StatusConflict)
+			return
+		}
+	}
+
+	mocks = append(mocks, newMock)
+
+	//handle new path being added
+	router.HandleFunc(newMock.URL, DynamicMockHandler).Methods(newMock.RequestMethod)
+	fmt.Printf("%+v\n", &newMock)
 }
 
 //Validates if the provided mock exists on the mocks slice based on the hash
