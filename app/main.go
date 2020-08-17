@@ -116,7 +116,6 @@ func ExportMockHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.ServeFile(w, r, fileName)
-	w.WriteHeader(201)
 }
 
 /** Helper methods **/

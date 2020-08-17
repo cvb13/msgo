@@ -98,7 +98,7 @@ Succesful response: 201 OK
 ]
 ```
 
-Succesfull response code: 201 OK
+Succesfull response code: 200 OK
 
 # Dependencies
 - This project uses https://github.com/gorilla/mux to build the handlers and routers for the mocked requests.
