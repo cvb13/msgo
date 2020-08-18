@@ -5,25 +5,11 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
-
-//RequestMock struct and functions
-type RequestMock struct {
-	Hash            [32]byte          `json:"Hash"`
-	URL             string            `json:"url"`
-	RequestBody     string            `json:"requestBody"`
-	RequestMethod   string            `json:"requestMethod"`
-	RequestHeaders  map[string]string `json:"requestHeaders"`
-	ResponseBody    string            `json:"responseBody"`
-	ResponseCode    int               `json:"responseCode"`
-	ResponseHeaders map[string]string `json:"responseHeaders"`
-	Override        bool              `json:"override"`
-}
 
 var router = mux.NewRouter()
 var mocks []RequestMock
@@ -195,40 +181,4 @@ func (r *RequestMock) hash() [32]byte {
 
 	r.Hash = generatedHash
 	return generatedHash
-}
-
-// Decodes the body in a string representing the json values. Used to calculate the hash
-func decodeBody(w http.ResponseWriter, r *http.Request) (string, error) {
-	decoder := json.NewDecoder(r.Body)
-	reqBody := map[string]interface{}{}
-	err := decoder.Decode(&reqBody)
-	if err != nil {
-		if err == io.EOF {
-			fmt.Println("Empty body.")
-		} else {
-			return "", err
-		}
-	}
-
-	fmt.Printf("ReqBody:%+v\n", &reqBody)
-
-	var result string
-	for key, val := range reqBody {
-		switch v := val.(type) {
-		default:
-			fmt.Printf("\nunexpected type %T", v)
-		case int:
-			n := fmt.Sprintf("{\"%v\":%v}", key, val)
-			result = result + n
-		case float64:
-			n := fmt.Sprintf("{\"%v\":%v}", key, val)
-			result = result + n
-		case string:
-			n := fmt.Sprintf("{\"%v\":\"%v\"}", key, val)
-			result = result + n
-		}
-
-	}
-	return result, nil
-
 }
