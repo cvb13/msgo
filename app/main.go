@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -60,7 +58,18 @@ func DynamicMockHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mock := RequestMock{URL: r.URL.Path, RequestMethod: r.Method, RequestBody: reqBody}
+	queryParams := r.URL.Query()
+	fullURL := r.URL.Path
+	if len(queryParams) != 0 {
+		fullURL += "?"
+		for k, v := range queryParams {
+			fullURL += fmt.Sprintf("%s&%s", k, v)
+		}
+	}
+
+	fmt.Printf("FullURL: %s", fullURL)
+
+	mock := RequestMock{URL: fullURL, RequestMethod: r.Method, RequestBody: reqBody}
 	fmt.Printf("Mock:%+v\n", &mock)
 	fmt.Printf("ExpectedHash:%x\n", mock.hash())
 
@@ -105,17 +114,6 @@ func ExportMockHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 /** Helper methods **/
-
-// Save mocks to file
-func saveMocksToFile(fileName string) error {
-	fmt.Printf("FileName: %s\n: ", fileName)
-	content, err := json.Marshal(mocks)
-	if err != nil {
-		fmt.Println("Error marshalling mocks")
-		return err
-	}
-	return ioutil.WriteFile(fileName, content, 0666)
-}
 
 //Adds a single request mock into the mocks array
 func addSingleMockRequest(newMock RequestMock, w http.ResponseWriter) {
@@ -169,16 +167,13 @@ func replaceMock(mock RequestMock) {
 	}
 }
 
-// Generates hash based on request URL, Method and Body
-func (r *RequestMock) hash() [32]byte {
-	var buffer bytes.Buffer
-
-	//URL + Method + Body
-	buffer.WriteString(r.URL)
-	buffer.WriteString(r.RequestMethod)
-	buffer.WriteString(r.RequestBody)
-	generatedHash := sha256.Sum256([]byte(buffer.String()))
-
-	r.Hash = generatedHash
-	return generatedHash
+// Save mocks to file
+func saveMocksToFile(fileName string) error {
+	fmt.Printf("FileName: %s\n: ", fileName)
+	content, err := json.Marshal(mocks)
+	if err != nil {
+		fmt.Println("Error marshalling mocks")
+		return err
+	}
+	return ioutil.WriteFile(fileName, content, 0666)
 }
