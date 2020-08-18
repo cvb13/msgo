@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -195,40 +194,4 @@ func (r *RequestMock) hash() [32]byte {
 
 	r.Hash = generatedHash
 	return generatedHash
-}
-
-// Decodes the body in a string representing the json values. Used to calculate the hash
-func decodeBody(w http.ResponseWriter, r *http.Request) (string, error) {
-	decoder := json.NewDecoder(r.Body)
-	reqBody := map[string]interface{}{}
-	err := decoder.Decode(&reqBody)
-	if err != nil {
-		if err == io.EOF {
-			fmt.Println("Empty body.")
-		} else {
-			return "", err
-		}
-	}
-
-	fmt.Printf("ReqBody:%+v\n", &reqBody)
-
-	var result string
-	for key, val := range reqBody {
-		switch v := val.(type) {
-		default:
-			fmt.Printf("\nunexpected type %T", v)
-		case int:
-			n := fmt.Sprintf("{\"%v\":%v}", key, val)
-			result = result + n
-		case float64:
-			n := fmt.Sprintf("{\"%v\":%v}", key, val)
-			result = result + n
-		case string:
-			n := fmt.Sprintf("{\"%v\":\"%v\"}", key, val)
-			result = result + n
-		}
-
-	}
-	return result, nil
-
 }
